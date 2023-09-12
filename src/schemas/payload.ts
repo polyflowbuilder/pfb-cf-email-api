@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { emailIdentifierSchema } from './email';
-import { feedbackTemplateSchema } from './feedback';
+import { feedbackTemplateSchema } from './templates/feedback';
 
 export const payloadSchema = z.object({
   expiry: z

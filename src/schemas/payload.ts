@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { emailIdentifierSchema } from './email';
 import { feedbackTemplateSchema } from './templates/feedback';
+import { resetPasswordTemplateSchema } from './templates/resetpw';
 
 export const payloadSchema = z.object({
   expiry: z
@@ -15,7 +16,7 @@ export const payloadSchema = z.object({
   subject: z.string({
     required_error: 'Subject field is required.'
   }),
-  template: z.discriminatedUnion('name', [feedbackTemplateSchema], {
+  template: z.discriminatedUnion('name', [feedbackTemplateSchema, resetPasswordTemplateSchema], {
     errorMap: (issue, ctx) => {
       console.log('issue', issue);
       if (issue.code === z.ZodIssueCode.invalid_union_discriminator) {

@@ -12,6 +12,9 @@ export const resetPasswordTemplateSchema = z.object({
       }),
     token: z.string({
       required_error: 'Token field is required.'
+    }),
+    domain: z.string({
+      required_error: 'Domain field is required.'
     })
   })
 });

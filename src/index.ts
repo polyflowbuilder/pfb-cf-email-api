@@ -5,6 +5,7 @@ import { sendEmail } from './emailHandler';
 import { verifyRequest } from './auth';
 import { payloadSchema } from './schemas/payload';
 import { requestBodySchema } from './schemas/request';
+import type { CFWorkerEnv } from './types';
 
 const availableTemplates = new Map([
   ['feedback', feedbackTemplate],
@@ -20,18 +21,8 @@ const availableTemplates = new Map([
   ]
 ]);
 
-export interface Env {
-  // symmetric key to verify signed request
-  SIGNATURE_KEY: string;
-
-  // parameters for DKIM email signing
-  DKIM_DOMAIN: string;
-  DKIM_SELECTOR: string;
-  DKIM_PRIVATE_KEY: string;
-}
-
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: CFWorkerEnv): Promise<Response> {
     try {
       if (request.method !== 'POST') {
         return new Response('Invalid method.', {

@@ -82,8 +82,8 @@ export default {
       const renderedEmailContent = emailContentBuilder(payloadParseResults.data.template.data);
 
       // send email
-      console.log('Sending email of type', payloadParseResults.data.template.name);
-      await sendEmail({
+      console.log('Attempting to send email of type', payloadParseResults.data.template.name);
+      const res = await sendEmail({
         to: [payloadParseResults.data.to],
         from: payloadParseResults.data.from,
         subject: payloadParseResults.data.subject,
@@ -94,7 +94,13 @@ export default {
           privateKeyBase64: env.DKIM_PRIVATE_KEY
         }
       });
-      return new Response('email sent');
+
+      if (!res) {
+        return new Response('Email failed to send, please try again later.', {
+          status: 500
+        });
+      }
+      return new Response('Email sent successfully.');
     } catch (error) {
       console.error('an error occurred during worker processing:', error);
       return new Response('Internal Server Error', {

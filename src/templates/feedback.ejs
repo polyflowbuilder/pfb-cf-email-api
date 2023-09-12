@@ -3,7 +3,7 @@
   <h1>PolyFlowBuilder Feedback Submitted</h1>
   <p>Someone has submitted feedback! Take a look at it:</p>
   <p><strong>Subject:</strong><%= locals.subject %></p>
-  <p><strong>Return Email:</strong><%= locals.returnEmail %></p>
+  <p><strong>Return Email:</strong><%= locals.returnEmail || "Not Provided" %></p>
   <p><strong>Feedback:</strong><%= locals.feedbackContent %></p>
   <p>
     If configured correctly, this feedback has also been added to the feedback submission database.

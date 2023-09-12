@@ -8,7 +8,7 @@ export const payloadSchema = z.object({
       required_error: 'Expiry field in milliseconds is required.'
     })
     .refine((expiryInMilliseconds) => {
-      Date.now() > expiryInMilliseconds;
+      return Date.now() < expiryInMilliseconds;
     }, 'Request has expired.'),
   to: emailIdentifierSchema,
   from: emailIdentifierSchema,
@@ -16,6 +16,22 @@ export const payloadSchema = z.object({
     required_error: 'Subject field is required.'
   }),
   template: z.discriminatedUnion('name', [feedbackTemplateSchema], {
-    required_error: 'Template field is required.'
+    errorMap: (issue, ctx) => {
+      console.log('issue', issue);
+      if (issue.code === z.ZodIssueCode.invalid_union_discriminator) {
+        return {
+          message: 'Template name field is missing or invalid.'
+        };
+      }
+      if (issue.code === z.ZodIssueCode.invalid_type && ctx.data === undefined) {
+        return {
+          message: 'Template field is required.'
+        };
+      }
+
+      return {
+        message: ctx.defaultError
+      };
+    }
   })
 });

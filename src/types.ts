@@ -1,12 +1,9 @@
+import { EmailIdentifier } from './schemas/email';
+
 export interface DKIM {
   domain: string;
   selector: string;
   privateKeyBase64: string;
-}
-
-export interface EmailIdentifier {
-  email: string;
-  name?: string;
 }
 
 export interface Email {

@@ -11,7 +11,7 @@ export const feedbackTemplateSchema = z.object({
       .email({
         message: 'Email field is not a valid email.'
       })
-      .optional(),
+      .default('Not provided'),
     feedbackContent: z.string({
       required_error: 'Feedback field is required.'
     })

@@ -1,11 +1,24 @@
 // entrypoint for worker
 import feedbackTemplate from './templates/feedback.ejs';
+import resetPasswordTemplate from './templates/resetpw.ejs';
 import { sendEmail } from './emailHandler';
 import { verifyRequest } from './auth';
 import { payloadSchema } from './schemas/payload';
 import { requestBodySchema } from './schemas/request';
 
-const availableTemplates = new Map([['feedback', feedbackTemplate]]);
+const availableTemplates = new Map([
+  ['feedback', feedbackTemplate],
+  [
+    'resetpw',
+    // need to relax type here
+    (input: Record<string, string>) =>
+      resetPasswordTemplate({
+        resetLink: `http://${input.domain}/resetpassword?email=${encodeURIComponent(
+          input.email
+        )}&token=${encodeURIComponent(input.token)}`
+      })
+  ]
+]);
 
 export interface Env {
   // symmetric key to verify signed request
@@ -76,7 +89,7 @@ export default {
       const emailContentBuilder = availableTemplates.get(payloadParseResults.data.template.name);
       if (!emailContentBuilder) {
         throw new Error(
-          `unable to find template for email type ${payloadParseResults.data.template.name}`
+          `unable to find template builder function for email type ${payloadParseResults.data.template.name}`
         );
       }
       const renderedEmailContent = emailContentBuilder(payloadParseResults.data.template.data);

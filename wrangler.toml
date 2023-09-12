@@ -1,5 +1,5 @@
 name = "pfb-cf-email-api"
-main = "src/index.ts"
+main = "dist/index.mjs"
 compatibility_date = "2023-09-04"
 
 # turn off domain

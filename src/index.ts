@@ -26,7 +26,7 @@ export default {
         });
       }
       if (request.headers.get('Content-Type') !== 'application/json') {
-        return new Response('Invalid content.', {
+        return new Response('Invalid Content-Type header.', {
           status: 400
         });
       }
@@ -56,7 +56,9 @@ export default {
       }
 
       // get and validate payload from request
-      const payloadParseResults = payloadSchema.safeParse(requestBodyParseResults.data);
+      const payloadParseResults = payloadSchema.safeParse(
+        JSON.parse(requestBodyParseResults.data.data)
+      );
       if (!payloadParseResults.success) {
         const { fieldErrors: validationErrors } = payloadParseResults.error.flatten();
         return new Response(

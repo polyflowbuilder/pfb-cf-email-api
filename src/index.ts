@@ -25,14 +25,24 @@ export default {
   async fetch(request: Request, env: CFWorkerEnv): Promise<Response> {
     try {
       if (request.method !== 'POST') {
-        return new Response('Invalid method.', {
-          status: 400
-        });
+        return Response.json(
+          {
+            message: 'Invalid method.'
+          },
+          {
+            status: 400
+          }
+        );
       }
       if (request.headers.get('Content-Type') !== 'application/json') {
-        return new Response('Invalid Content-Type header.', {
-          status: 400
-        });
+        return Response.json(
+          {
+            message: 'Invalid Content-Type header.'
+          },
+          {
+            status: 400
+          }
+        );
       }
 
       // validate request body
@@ -40,11 +50,11 @@ export default {
       const requestBodyParseResults = requestBodySchema.safeParse(requestBody);
       if (!requestBodyParseResults.success) {
         const { fieldErrors: validationErrors } = requestBodyParseResults.error.flatten();
-        return new Response(
-          JSON.stringify({
+        return Response.json(
+          {
             message: 'Request validation failed.',
             validationErrors
-          }),
+          },
           {
             status: 400
           }
@@ -54,9 +64,14 @@ export default {
       // authenticate request using HMAC signature
       const verified = await verifyRequest(requestBodyParseResults.data, env.SIGNATURE_KEY);
       if (!verified) {
-        return new Response('Request signature/payload combination is invalid.', {
-          status: 403
-        });
+        return Response.json(
+          {
+            message: 'Request signature/payload combination is invalid.'
+          },
+          {
+            status: 403
+          }
+        );
       }
 
       // get and validate payload from request
@@ -65,11 +80,11 @@ export default {
       );
       if (!payloadParseResults.success) {
         const { fieldErrors: validationErrors } = payloadParseResults.error.flatten();
-        return new Response(
-          JSON.stringify({
+        return Response.json(
+          {
             message: 'Request payload validation failed.',
             validationErrors
-          }),
+          },
           {
             status: 400
           }
@@ -100,16 +115,28 @@ export default {
       });
 
       if (!res) {
-        return new Response('Email failed to send, please try again later.', {
-          status: 500
-        });
+        return Response.json(
+          {
+            message: 'Email failed to send, please try again later.'
+          },
+          {
+            status: 500
+          }
+        );
       }
-      return new Response('Email sent successfully.');
+      return Response.json({
+        message: 'Email sent successfully.'
+      });
     } catch (error) {
       console.error('an error occurred during worker processing:', error);
-      return new Response('Internal Server Error', {
-        status: 500
-      });
+      return Response.json(
+        {
+          message: 'Internal Server Error'
+        },
+        {
+          status: 500
+        }
+      );
     }
   }
 };

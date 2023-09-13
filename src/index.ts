@@ -102,17 +102,21 @@ export default {
 
       // send email
       console.log('Attempting to send email of type', payloadParseResults.data.template.name);
-      const res = await sendEmail({
-        to: [payloadParseResults.data.to],
-        from: payloadParseResults.data.from,
-        subject: payloadParseResults.data.subject,
-        contentHTML: renderedEmailContent,
-        signature: {
-          domain: env.DKIM_DOMAIN,
-          selector: env.DKIM_SELECTOR,
-          privateKeyBase64: env.DKIM_PRIVATE_KEY
-        }
-      });
+      const url = new URL(request.url);
+      const res = await sendEmail(
+        {
+          to: [payloadParseResults.data.to],
+          from: payloadParseResults.data.from,
+          subject: payloadParseResults.data.subject,
+          contentHTML: renderedEmailContent,
+          signature: {
+            domain: env.DKIM_DOMAIN,
+            selector: env.DKIM_SELECTOR,
+            privateKeyBase64: env.DKIM_PRIVATE_KEY
+          }
+        },
+        url.searchParams.get('dryrun') === 'true'
+      );
 
       if (!res) {
         return Response.json(

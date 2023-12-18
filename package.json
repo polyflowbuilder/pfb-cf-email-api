@@ -2,6 +2,7 @@
   "name": "pfb-cf-email-api",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "deploy": "vite build && wrangler deploy",
     "dev": "concurrently \"vite build --watch\" \"sleep 0.5 && wrangler dev\""
@@ -13,7 +14,7 @@
     "concurrently": "^8.2.1",
     "ejs": "^3.1.9",
     "typescript": "^5.0.4",
-    "vite": "^4.4.9",
+    "vite": "^5.0.10",
     "wrangler": "^3.7.0"
   },
   "dependencies": {

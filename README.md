@@ -14,20 +14,25 @@ At first, it was considered to create a custom mail server system for PolyFlowBu
 
 Therefore, a variety of email service providers (ESPs) were considered, but they were all either:
 
-- a. too expensive for PolyFlowBuilder's scale
-- b. had limitations that weren't acceptable for PolyFlowBuilder (e.g. domain limits, harsh free tier limits, mandatory email/link tracking, poor APIs, etc.)
-- c. not meant for the types of emails PolyFlowBuilder sends to users ("transactional" emails, a majority of ESPs are email marketing/campaign-based only)
+- Too expensive for PolyFlowBuilder's scale
+- Had limitations that weren't acceptable for PolyFlowBuilder (e.g. domain limits, harsh free tier limits, mandatory email/link tracking, poor APIs, etc.)
+- Not meant for the types of emails PolyFlowBuilder sends to users ("transactional" emails, a majority of ESPs are email marketing/campaign-based only)
 
-Throughout this research, a third option was discovered. In May 2022, [Cloudflare announced a partnership with Mailchannels](https://community.cloudflare.com/t/send-email-from-workers-using-mailchannels-for-free/361973), which is an enterprise-level ESP that manages email sending for hosting providers (to give you an idea of their scale). This partnership allows emails to be sent via Mailchannel's services **for free** on a Cloudflare Worker with **custom domains** (after being configured correctly) for up to **100,000 emails per day**.
+Therefore, after lots of research, the [Resend](https://resend.com) platform was selceted to send PolyFlowBuilder's transactional emails. They have a large enough free quota which will satisfy PolyFlowBuilder's needs today, and it is developer friendly which allows the customizability that we require.
 
-This option is perfect for PolyFlowBuilder's use, as:
+Using Cloudflare Workers and Resend is perfect for PolyFlowBuilder's use, as:
 
-- a. PolyFlowBuilder is on the Cloudflare network already (as part of other migration efforts)
-- b. This allows a custom solution to be rolled that handles PolyFlowBuilder's email use cases
-- c. There is no loss in functionality/features between the existing email solution and this one
+- PolyFlowBuilder is on the Cloudflare network already (as part of other migration efforts)
+- This allows a custom solution to be rolled that handles PolyFlowBuilder's email use cases
+- There is no loss in functionality/features between the existing email solution and this one
+- Using a Cloudflare Worker + email provider (Resend in this case) allows us to easily switch out email providers if necessary in the future
 
-Therefore, this service was born. The Cloudflare worker in this repository takes advantage of this Mailchannels partnership to manage PolyFlowBuilder's email capabilities.
+Therefore, this service was born.
 
 ## Maintainers
 
 - @AGuyWhoIsBored ([Bitbucket](https://bitbucket.org/AGuyWhoIsBored), [GitHub](https://github.com/AGuyWhoIsBored), [LinkedIn](https://linkedin.com/in/dapplegarth))
+
+### Footnotes
+
+1. Previously, this service took advantage of the [Cloudflare partnership with Mailchannels](https://community.cloudflare.com/t/send-email-from-workers-using-mailchannels-for-free/361973) announced in May 2022. A Cloudflare Worker was specifically required for this use case because this was the only integration supported by the Cloudflare and Mailchannels partnership. However, this service has been [discontinued and deactivated as of August 2024](https://support.mailchannels.com/hc/en-us/articles/26814255454093-End-of-Life-Notice-Cloudflare-Workers), so another email provider was required. The Cloudflare Worker here still works perfectly fine, so we keep it around.

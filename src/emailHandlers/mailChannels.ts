@@ -1,6 +1,10 @@
-import type { Email } from './types';
+import type { CFWorkerEnv, Email } from './../types';
 
-export async function sendEmail(email: Email, dryRun: boolean): Promise<boolean> {
+// email handler used to interface with the Mailchannels API
+// (free use now discontinued for Cloudflare Workers users)
+// reference: https://support.mailchannels.com/hc/en-us/articles/26814255454093-End-of-Life-Notice-Cloudflare-Workers
+
+export async function sendEmail(env: CFWorkerEnv, email: Email, dryRun: boolean): Promise<boolean> {
   try {
     // form request
     const emailRequest = new Request(
@@ -14,9 +18,9 @@ export async function sendEmail(email: Email, dryRun: boolean): Promise<boolean>
           personalizations: [
             {
               to: email.to,
-              dkim_domain: email.signature.domain,
-              dkim_selector: email.signature.selector,
-              dkim_private_key: email.signature.privateKeyBase64
+              dkim_domain: env.DKIM_DOMAIN,
+              dkim_selector: env.DKIM_SELECTOR,
+              dkim_private_key: env.DKIM_PRIVATE_KEY
             }
           ],
           from: email.from,

@@ -1,7 +1,7 @@
 // entrypoint for worker
 import feedbackTemplate from './templates/feedback.ejs';
 import resetPasswordTemplate from './templates/resetpw.ejs';
-import { sendEmail } from './emailHandler';
+import { sendEmail } from './emailHandlers/resend';
 import { verifyRequest } from './auth';
 import { payloadSchema } from './schemas/payload';
 import { requestBodySchema } from './schemas/request';
@@ -103,17 +103,15 @@ export default {
       // send email
       console.log('Attempting to send email of type', payloadParseResults.data.template.name);
       const url = new URL(request.url);
+
+      // use a specific email provider to send emails
       const res = await sendEmail(
+        env,
         {
           to: [payloadParseResults.data.to],
           from: payloadParseResults.data.from,
           subject: payloadParseResults.data.subject,
-          contentHTML: renderedEmailContent,
-          signature: {
-            domain: env.DKIM_DOMAIN,
-            selector: env.DKIM_SELECTOR,
-            privateKeyBase64: env.DKIM_PRIVATE_KEY
-          }
+          contentHTML: renderedEmailContent
         },
         url.searchParams.get('dryrun') === 'true'
       );

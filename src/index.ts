@@ -1,4 +1,5 @@
 // entrypoint for worker
+import * as z from 'zod';
 import feedbackTemplate from './templates/feedback.ejs';
 import resetPasswordTemplate from './templates/resetpw.ejs';
 import { sendEmail } from './emailHandlers/resend';
@@ -49,7 +50,7 @@ export default {
       const requestBody = await request.json();
       const requestBodyParseResults = requestBodySchema.safeParse(requestBody);
       if (!requestBodyParseResults.success) {
-        const { fieldErrors: validationErrors } = requestBodyParseResults.error.flatten();
+        const { fieldErrors: validationErrors } = z.flattenError(requestBodyParseResults.error);
         return Response.json(
           {
             message: 'Request validation failed.',
@@ -79,7 +80,7 @@ export default {
         JSON.parse(requestBodyParseResults.data.data)
       );
       if (!payloadParseResults.success) {
-        const { fieldErrors: validationErrors } = payloadParseResults.error.flatten();
+        const { fieldErrors: validationErrors } = z.flattenError(payloadParseResults.error);
         return Response.json(
           {
             message: 'Request payload validation failed.',

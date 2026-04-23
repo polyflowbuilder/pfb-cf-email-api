@@ -1,4 +1,5 @@
-import { z } from 'zod';
+import * as z from 'zod';
+import { getRequiredFieldError } from './util';
 import { emailIdentifierSchema } from './email';
 import { feedbackTemplateSchema } from './templates/feedback';
 import { resetPasswordTemplateSchema } from './templates/resetpw';
@@ -6,7 +7,7 @@ import { resetPasswordTemplateSchema } from './templates/resetpw';
 export const payloadSchema = z.object({
   expiry: z
     .number({
-      required_error: 'Expiry field in milliseconds is required.'
+      error: (issue) => getRequiredFieldError('Expiry (ms)', issue)
     })
     .refine((expiryInMilliseconds) => {
       return Date.now() < expiryInMilliseconds;
@@ -14,25 +15,15 @@ export const payloadSchema = z.object({
   to: emailIdentifierSchema,
   from: emailIdentifierSchema,
   subject: z.string({
-    required_error: 'Subject field is required.'
+    error: (issue) => getRequiredFieldError('Subject', issue)
   }),
   template: z.discriminatedUnion('name', [feedbackTemplateSchema, resetPasswordTemplateSchema], {
-    errorMap: (issue, ctx) => {
+    error: (issue) => {
       console.log('issue', issue);
-      if (issue.code === z.ZodIssueCode.invalid_union_discriminator) {
-        return {
-          message: 'Template name field is missing or invalid.'
-        };
+      if (issue.code === 'invalid_union') {
+        return 'Template name field is missing or invalid.';
       }
-      if (issue.code === z.ZodIssueCode.invalid_type && ctx.data === undefined) {
-        return {
-          message: 'Template field is required.'
-        };
-      }
-
-      return {
-        message: ctx.defaultError
-      };
+      return getRequiredFieldError('Template', issue);
     }
   })
 });

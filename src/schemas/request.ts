@@ -1,10 +1,11 @@
-import { z } from 'zod';
+import * as z from 'zod';
+import { getRequiredFieldError } from './util';
 
 export const requestBodySchema = z.object({
   signature: z.string({
-    required_error: 'Signature is required.'
+    error: (issue) => getRequiredFieldError('Signature', issue)
   }),
   data: z.string({
-    required_error: 'Data is required.'
+    error: (issue) => getRequiredFieldError('Data', issue)
   })
 });
